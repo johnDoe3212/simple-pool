@@ -52,13 +52,9 @@ describe("Task", function () {
     expect(await task.connect(user2).balanceOfDeposit(testToken.address)).to.eq(amount);
   });
 
-  it("should be possible to dep rewards by owner", async function () {
+  it("should be possible to dep rewards only by owner", async function () {
     const amount = ethers.utils.parseUnits("1", "4");
     expect(await task.connect(owner).depositRewardToken(amount)).to.changeTokenBalances(rewardToken, [owner.address, task.address], [-amount, amount]);
-  });
-
-  it("shouldn't be possible to dep rewards by non-owner address", async function () {
-    const amount = ethers.utils.parseUnits("1", "4");
     await expect(task.connect(user1).depositRewardToken(amount)).to.be.revertedWith("You are not an owner");
   });
 
@@ -105,7 +101,6 @@ describe("Task", function () {
   it("shouldn't be reentrant", async function () {
     const amount = 10;
     await task.connect(user1).deposit(reentrancyToken.address, 100);
-    // await task.connect(user1).withdraw(reentrancyToken.address, amount);
     await expect(task.connect(user1).withdraw(reentrancyToken.address, amount)).to.be.reverted;
   });
 
